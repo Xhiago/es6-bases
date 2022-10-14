@@ -15,21 +15,31 @@ const fallo=(status)=>{
     console.log(status)
 }
 
-const get_data=(endpoint, exito, fallo)=>{
-    //2.Se crea el objeto de conexión
-    let http = new XMLHttpRequest()
+const get_data=(endpoint)=>{
+    //definir una promesa para laconexion a la api
+    let promise = new Promise( ( resolve, reject) =>{
+        //2.Se crea el objeto de conexión
+    const http = new XMLHttpRequest()
     //3. abrir conexión a la API 
     http.open('get', endpoint)
     //4. Enviar la solicitud(request) a la API
     http.send()
     //5.Hacer el tratamiento de la response
     http.onload = function(){
-        if(http.status === 200){
-            exito(http.responseText)
-        }else{
-            fallo(http.status)
+            if(http.status === 200){
+                resolve(http.responseText)
+            }else{
+                reject(http.status)
+            }
         }
-    }
+    })
+
+    return promise
 }
+
 //Invocar la función get_data
-get_data(endpoint, exito, fallo)
+get_data(endpoint).then((muestradatos)=>{
+    exito(muestradatos)
+}).catch((status)=>{
+    fallo(status)
+})
